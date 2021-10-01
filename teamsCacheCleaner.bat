@@ -58,13 +58,96 @@ IF ERRORLEVEL 1 (
   GOTO mainMenu
 )
 
-::Main menu area.
+:: Start of main menu area.
 :mainMenu
+:: Variable to check the entered options.
+SET checkOption=false
+
 CALL :mainMenuBanner
-ECHO  ------------------------------------------------------------------
 ECHO        1) Clean Teams Cache  2) Install Teams 3) Exit Cleaner
 ECHO  ------------------------------------------------------------------
+ECHO.
+SET /P cleanerChoice="Enter your choice [1 or 2 or 3]: "
+
+:: Checking the entered choice to see if it's valid.
+:: If valid the right action will be taken.
+IF %cleanerChoice% EQU 1 (
+  SET checkOption=true
+  GOTO startCleaner
+)
+
+IF %cleanerChoice% EQU 2 (
+  SET checkOption=true
+  GOTO installTeams
+)
+
+IF %cleanerChoice% EQU 3 (
+  SET checkOption=true
+  GOTO exitCleaner
+)
+
+:: If not accepted throws back to the main installation menu.
+IF %checkOption% EQU false (
+  ECHO.
+  ECHO Not a valid choice .... Please try again.
+  TIMEOUT /T 3 /NOBREAK > NUL
+  GOTO mainMenu
+)
+EXIT /B
+:: End of main menu
+
+:: Start of cleaner area.
+:startCleaner
+CALL :mainMenuBanner
+ECHO.
+ECHO Checking if teams running or not ....
+TIMEOUT /T 4 /NOBREAK > NUL
+ECHO.
+QPROCESS "Teams.exe" > NUL
+
+IF %ERRORLEVEL% EQU 0 (
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
+  ECHO Found teams running and closing it now ....
+  ECHO.
+  TASKKILL /T /F /FI "IMAGENAME eq teams.exe" /IM teams.exe
+  ECHO.
+  ECHO Done.
+  TIMEOUT /T 3 /NOBREAK > NUL
+  GOTO folderClean
+) ELSE (
+  CALL :mainMenuBanner
+  ECHO.
+  ECHO Checking Teams foleder location .....
+  WHERE /Q /R %testTeamsPath% Teams.exe > NUL  
+  IF %ERRORLEVEL% EQU 1 (
+    CLS
+    CALL :mainMenuBanner
+    ECHO.
+    ECHO Folders found starting the clean process ....
+    TIMEOUT /T 3 /NOBREAK > NUL
+    GOTO folderClean
+  ) ELSE (
+    CLS
+    CALL :mainMenuBanner
+    ECHO.
+    ECHO Nothing found returning to main menu and recomend installing first ....
+    TIMEOUT /T 3 /NOBREAK > NUL
+    GOTO mainMenu
+  )
+)
+EXIT /B
+:: End of cleaner area.
+
+:folderClean
+CLS
+CALL :mainMenuBanner
+ECHO.
+ECHO Starting folder clean
 PAUSE
+
+:: End of cleaner area.
 
 :: Installe menu.
 :installMenu
@@ -77,7 +160,7 @@ ECHO  ------------------------------------------------------------------
 ECHO.
 SET /P installChoice="Enter your choice [1 or 2]: "
 
-:: Check the entered choice if it's valide or not.
+:: Check the entered choice if to see it's valide or not.
 :: If valid the right action will be taken.
 IF %installChoice% EQU 1 (
   SET optionCheck=true
@@ -92,7 +175,7 @@ IF %installChoice% EQU 2 (
 :: If not accepted throws back to the main installation menu.
 IF %optionCheck% EQU false (
   ECHO.
-  ECHO  Not a valide choice .... Please try agine.
+  ECHO  Not a valide choice .... Please try again.
   TIMEOUT /T 3 /NOBREAK > NUL
   GOTO installMenu
 )
@@ -176,6 +259,7 @@ ECHO               ++                                    ++
 ECHO               ++  Version: 0.1.0.1                  ++
 ECHO               ++++++++++++++++++++++++++++++++++++++++
 ECHO.
+ECHO  ------------------------------------------------------------------
 EXIT /B
 
 :installBanner

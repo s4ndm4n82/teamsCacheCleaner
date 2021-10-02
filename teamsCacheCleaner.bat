@@ -52,7 +52,7 @@ PUSHD %currentDirectory%
 CD /D %currentDirectory%
 
 :: Test if Microsoft Teams exits.
-WHERE /Q /R %testTeamsPath% Teams.exe > NUL
+WHERE /Q /R %testTeamsPath% Teams.exe 2> NUL
 CLS
 IF ERRORLEVEL 1 (
   :: If Teams does not exisit this will take the user to download page.
@@ -115,7 +115,7 @@ ECHO.
 ECHO Checking if teams running or not ....
 TIMEOUT /T 4 /NOBREAK > NUL
 ECHO.
-QPROCESS "Teams.exe" > NUL
+QPROCESS "Teams.exe" 2> NUL
 
 IF %ERRORLEVEL% EQU 0 (
   CLS
@@ -132,7 +132,7 @@ IF %ERRORLEVEL% EQU 0 (
   CALL :mainMenuBanner
   ECHO.
   ECHO Checking Teams foleder location .....
-  WHERE /Q /R %testTeamsPath% Teams.exe > NUL  
+  WHERE /Q /R %testTeamsPath% Teams.exe 2> NUL  
   IF %ERRORLEVEL% EQU 1 (
     CLS
     CALL :mainMenuBanner
@@ -166,12 +166,19 @@ FOR /F %%i IN ('DIR /B /A %mainCache%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %mainCache%
+    CD /D %mainCache%
     ECHO Cleaning %mainCache% ....
-    DEL /F /S /Q %mainCache%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
+    PAUSE
     TIMEOUT /T 2 /NOBREAK > NUL
-    SET checkEmpty=true
+    SET checkEmpty=true    
     CLS
 ) ELSE (  
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Folder is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
@@ -184,12 +191,18 @@ FOR /F %%i IN ('DIR /B /A %blobStorag%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %blobStorag%
+    CD /D %blobStorag%
     ECHO Cleaning %blobStorag% ....
-    DEL /F /S /Q %blobStorag%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
     TIMEOUT /T 2 /NOBREAK > NUL
     SET checkEmpty=true
     CLS
 ) ELSE (  
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Foler is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
@@ -202,12 +215,18 @@ FOR /F %%i IN ('DIR /B /A %dataBases%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %dataBases%
+    CD /D %dataBases%
     ECHO Cleaning %dataBases% ....
-    DEL /F /S /Q %dataBases%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
     TIMEOUT /T 2 /NOBREAK > NUL
     SET checkEmpty=true
     CLS
 ) ELSE (  
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Foler is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
@@ -220,12 +239,18 @@ FOR /F %%i IN ('DIR /B /A %gpuCache%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %gpuCache%
+    CD /D %gpuCache%
     ECHO Cleaning %gpuCache% ....
-    DEL /F /S /Q %gpuCache%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
     TIMEOUT /T 2 /NOBREAK > NUL
     SET checkEmpty=true
     CLS
 ) ELSE (
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Foler is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
@@ -238,12 +263,18 @@ FOR /F %%i IN ('DIR /B /A %indexedDB%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %indexedDB%
+    CD /D %indexedDB%
     ECHO Cleaning %indexedDB% ....
-    DEL /F /S /Q %indexedDB%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
     TIMEOUT /T 2 /NOBREAK > NUL
     SET checkEmpty=true
     CLS
 ) ELSE (
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Foler is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
@@ -256,12 +287,18 @@ FOR /F %%i IN ('DIR /B /A %localStorage%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %localStorage%
+    CD /D %localStorage%
     ECHO Cleaning %localStorage% ....
-    DEL /F /S /Q %localStorage%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
     TIMEOUT /T 2 /NOBREAK > NUL
     SET checkEmpty=true
     CLS
 ) ELSE (
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Foler is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
@@ -274,18 +311,26 @@ FOR /F %%i IN ('DIR /B /A %TMP%') DO (
 )
 
 IF %checkEmpty% EQU false (
+    PUSHD %TMP%
+    CD /D %TMP%
     ECHO Cleaning %TMP% ....
-    DEL /F /S /Q %TMP%\*.*
+    DEL /F /S /Q *
+    RD /S /Q . 2> NUL
     TIMEOUT /T 2 /NOBREAK > NUL
     SET checkEmpty=true
     CLS
 ) ELSE (
+  CLS
+  CALL :mainMenuBanner
+  ECHO.
   ECHO Foler is empty .... !
   TIMEOUT /T 2 /NOBREAK > NUL
   CLS
 )
 
 CALL :mainMenuBanner
+PUSHD %currentDirectory%
+CD /D %currentDirectory%
 ECHO.
 ECHO Done cleaning all the folders. Returning to main menu .... !
 ECHO.
@@ -328,7 +373,7 @@ EXIT /B
 
 :downloadTeams
 CLS
-WHERE /Q /R %downloadDirectory% Teams_windows_x64.exe
+WHERE /Q /R %downloadDirectory% Teams_windows_x64.exe 2> NUL
 IF ERRORLEVEL 1 (
   CALL :installBanner
   ECHO.

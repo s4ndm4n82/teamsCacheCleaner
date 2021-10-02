@@ -1,5 +1,8 @@
 @ECHO OFF
+:: Setting the command prompt title.
 TITLE Teams Catche Cleaner
+:: Setting the command prompt color to look like Matrix ;-).
+COLOR 02
 CLS
 
 :: Variables
@@ -10,8 +13,17 @@ SET testTeamsPath="%LOCALAPPDATA%\Microsoft"
 SET downloadDirectory="%USERPROFILE%\Downloads"
 SET getFile=curl -# "https://statics.teams.cdn.office.net/production-windows-x64/1.4.00.22976/Teams_windows_x64.exe" -o %downloadDirectory%\Teams_windows_x64.exe
 
+:: Folder paths
+SET mainCache="%APPDATA%\Microsoft\Teams\Cache"
+SET blobStorag="%APPDATA%\Microsoft\Teams\blob_storage"
+SET dataBases="%APPDATA%\Microsoft\Teams\databases"
+SET gpuCache="%APPDATA%\Microsoft\Teams\GPUCache"
+SET indexedDB="%APPDATA%\Microsoft\Teams\IndexedDB"
+SET localStorage="%APPDATA%\Microsoft\Teams\Local Storage"
+SET TMP="%APPDATA%\Microsoft\Teams\tmp"
+
 :: Getting Admin right for the batch file.
-:----------------------------------------------------
+::----------------------------------------------------
 :: Permission check.
   IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
     >nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
@@ -50,7 +62,7 @@ IF ERRORLEVEL 1 (
   ECHO  + Program will now take you to install menu in 5 seconds.  +
   ECHO  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ECHO.
-  ECHO  Switching to installer menu .... !
+  ECHO Switching to installer menu .... !
   TIMEOUT /T 5 /NOBREAK > NUL
   GOTO installMenu
 ) ELSE (
@@ -78,7 +90,7 @@ IF %cleanerChoice% EQU 1 (
 
 IF %cleanerChoice% EQU 2 (
   SET checkOption=true
-  GOTO installTeams
+  GOTO downloadTeams
 )
 
 IF %cleanerChoice% EQU 3 (
@@ -140,14 +152,147 @@ IF %ERRORLEVEL% EQU 0 (
 EXIT /B
 :: End of cleaner area.
 
+:: Starting folder cleaning area.
 :folderClean
+:: Variable for checking the folder empty or not.
+SET checkEmpty=true
+
 CLS
 CALL :mainMenuBanner
 ECHO.
-ECHO Starting folder clean
-PAUSE
+ECHO Checking folder for content ....
+FOR /F %%i IN ('DIR /B /A %mainCache%') DO (
+    SET checkEmpty=false
+)
 
-:: End of cleaner area.
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %mainCache% ....
+    DEL /F /S /Q %mainCache%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (  
+  ECHO Folder is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+FOR /F %%i IN ('DIR /B /A %blobStorag%') DO (
+    SET checkEmpty=false
+)
+
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %blobStorag% ....
+    DEL /F /S /Q %blobStorag%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (  
+  ECHO Foler is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+FOR /F %%i IN ('DIR /B /A %dataBases%') DO (
+    SET checkEmpty=false    
+)
+
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %dataBases% ....
+    DEL /F /S /Q %dataBases%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (  
+  ECHO Foler is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+FOR /F %%i IN ('DIR /B /A %gpuCache%') DO (
+    SET checkEmpty=false
+)
+
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %gpuCache% ....
+    DEL /F /S /Q %gpuCache%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (
+  ECHO Foler is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+FOR /F %%i IN ('DIR /B /A %indexedDB%') DO (
+    SET checkEmpty=false
+)
+
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %indexedDB% ....
+    DEL /F /S /Q %indexedDB%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (
+  ECHO Foler is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+FOR /F %%i IN ('DIR /B /A %localStorage%') DO (
+    SET checkEmpty=false
+)
+
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %localStorage% ....
+    DEL /F /S /Q %localStorage%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (
+  ECHO Foler is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+FOR /F %%i IN ('DIR /B /A %TMP%') DO (
+    SET checkEmpty=false
+)
+
+IF %checkEmpty% EQU false (
+    ECHO Cleaning %TMP% ....
+    DEL /F /S /Q %TMP%\*.*
+    TIMEOUT /T 2 /NOBREAK > NUL
+    SET checkEmpty=true
+    CLS
+) ELSE (
+  ECHO Foler is empty .... !
+  TIMEOUT /T 2 /NOBREAK > NUL
+  CLS
+)
+
+CALL :mainMenuBanner
+ECHO.
+ECHO Done cleaning all the folders. Returning to main menu .... !
+ECHO.
+TIMEOUT /T 3 /NOBREAK > NUL
+GOTO mainMenu 
+EXIT /B
+:: End of folder cleaning area.
 
 :: Installe menu.
 :installMenu
@@ -164,7 +309,7 @@ SET /P installChoice="Enter your choice [1 or 2]: "
 :: If valid the right action will be taken.
 IF %installChoice% EQU 1 (
   SET optionCheck=true
-  GOTO installTeams
+  GOTO downloadTeams
 )
 
 IF %installChoice% EQU 2 (
@@ -175,31 +320,31 @@ IF %installChoice% EQU 2 (
 :: If not accepted throws back to the main installation menu.
 IF %optionCheck% EQU false (
   ECHO.
-  ECHO  Not a valide choice .... Please try again.
+  ECHO Not a valide choice .... Please try again.
   TIMEOUT /T 3 /NOBREAK > NUL
   GOTO installMenu
 )
 EXIT /B
 
-:installTeams
+:downloadTeams
 CLS
 WHERE /Q /R %downloadDirectory% Teams_windows_x64.exe
 IF ERRORLEVEL 1 (
   CALL :installBanner
   ECHO.
-  ECHO  Downloading Teams .... !
+  ECHO Downloading Teams .... !
   %getFile%
   IF %ERRORLEVEL% NEQ 1 (
     CLS
     CALL :installBanner
     ECHO.
-    ECHO  Something went wrong tying again .... !
+    ECHO Something went wrong tying again .... !
     %getFile%
     IF %ERRORLEVEL% NEQ 1 (
       CLS
       CALL :installBanner
       ECHO.
-      ECHO  Didn't work ... Time to exit.
+      ECHO Didn't work ... Time to exit.
       TIMEOUT /T 5 /NOBREAK > NUL
       GOTO mainMenu
     )
@@ -214,40 +359,40 @@ IF ERRORLEVEL 1 (
 CLS
 CALL :installBanner
 ECHO.
-ECHO  Starting Teams Installer .... !
+ECHO Starting Teams Installer .... !
 START /B /W /D %downloadDirectory% Teams_windows_x64.exe
 TIMEOUT /T 5 /NOBREAK > NUL
   IF %ERRORLEVEL% EQU 0 (
     CLS
     CALL :installBanner
     ECHO.
-    ECHO  Teams installer started successfully. We can exit now .... !
+    ECHO Teams installer started successfully. Returning to main menu .... !
     TIMEOUT /T 3 /NOBREAK > NUL
-    GOTO exitCleaner
+    GOTO mainMenu
   ) ELSE (
     CLS
     ECHO.
     CALL :installBanner
-    ECHO  Trying one last time .... !
+    ECHO Trying one last time .... !
     START /B /WAIT /D %downloadDirectory% Teams_windows_x64.exe
       IF %ERRORLEVEL% EQU 0 (
         CLS
         CALL :installBanner
         ECHO.
-        ECHO  Teams installer started successfully. We can exit now .... !
+        ECHO Teams installer started successfully. Returning to main menu .... !
         TIMEOUT /T 3 /NOBREAK > NUL
-        GOTO exitCleaner
+        GOTO mainMenu
       ) ELSE (
         CLS
         CALL :installBanner
         ECHO.
-        ECHO  Didn't work .... Time to exit ...!
+        ECHO Didn't work .... Time to exit ...!
         TIMEOUT /T 3 /NOBREAK > NUL
         GOTO exitCleaner
       )
   )
+EXIT /B
 
-PAUSE
 :: Banner Section (Just for banners)
 :mainMenuBanner
 CLS
@@ -275,7 +420,9 @@ ECHO  ------------------------------------------------------------------
 EXIT /B
 
 :exitCleaner
-
-ECHO Exit part working .... !
-
-PAUSE
+CALL :mainMenuBanner
+ECHO.
+ECHO Exiting the cleaner. Thank you .... !
+ECHO.
+TIMEOUT /T 3 /NOBREAK > NUL
+EXIT > NUL
